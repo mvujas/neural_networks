@@ -1,1 +1,1 @@
-# neural_networks
+# Example of usage of neural networks
