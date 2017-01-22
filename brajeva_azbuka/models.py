@@ -3,6 +3,7 @@ from pybrain.structure import SigmoidLayer
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import BackpropTrainer
 import pickle
+import Tkinter as tk
 
 
 def delete_line():
@@ -91,3 +92,60 @@ class NeuralNetwork:
 		outfile = open(f, 'w')
 		pickle.dump(self.__net, outfile)
 		outfile.close()
+
+class GUI:
+	def __init__(self):
+		self._closed = True
+		self._result = [0] * 6
+		self._root = tk.Tk()
+		self._root.title('Brajeva azbuka')
+		self._root.resizable(0, 0)
+		self._root.withdraw()
+		self._root.bind('<Return>', self.terminate)
+		self._canvas = tk.Canvas(self._root, width=260, height=390)
+		self._dot = [[None, None], [None, None], [None, None]]
+		for i in range(0, 3):
+			for j in range(0, 2):
+				r = 50
+				space = 15
+				starty = 2 * i * (space + r) + space
+				startx = 2 * j * (space + r) + space
+				self._dot[i][j] = self._canvas.create_oval(startx, starty, startx + 2 * r, starty + 2 * r, fill='white')
+				self._canvas.tag_bind(self._dot[i][j], '<Button-1>', self.change_dot)
+		self._runButton = tk.Button(self._root, text='Pokreni')
+		self._runButton.bind('<Button-1>', self.terminate)
+
+		self._canvas.pack()
+		self._runButton.pack()
+
+	def start(self):
+		self._result = [0] * 6
+		for i in range(0, 3):
+			for j in range(0, 2):
+				self._canvas.itemconfig(self._dot[i][j], fill='white')
+		self._closed = True
+		self._root.deiconify()
+		self._root.mainloop()
+
+	def change_dot(self, event):
+		if self._canvas.itemconfig(event.widget.find_withtag('current'))['fill'][4] == 'white':
+			self._canvas.itemconfig(event.widget.find_withtag('current'), fill='black')
+		else:
+			self._canvas.itemconfig(event.widget.find_withtag('current'), fill='white')
+
+	def terminate(self, event):
+		for i in range(0, 3):
+			for j in range(0, 2):
+				if self._canvas.itemconfig(self._dot[i][j])['fill'][4] == 'black':
+					self._result[2 * i + j] = 1
+				else:
+					self._result[2 * i + j] = 0
+		self._closed = False
+		self._root.withdraw()
+		self._root.quit()
+
+	def get_info(self):
+		return { 
+			'result' : self._result,
+			'closed' : self._closed
+		}
