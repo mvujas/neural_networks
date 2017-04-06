@@ -74,7 +74,6 @@ class NeuralNetwork:
 			print "Epoch:", epoch + 1, ", greska:", error
 			if error < desiredError:
 				return error
-				break;
 		return error
 
 	def save_net_to_file(self, f):
